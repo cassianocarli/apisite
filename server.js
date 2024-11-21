@@ -1,3 +1,4 @@
+// server.js
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
@@ -7,20 +8,16 @@ const app = express();
 app.use(express.json()); // Para interpretar o corpo das requisições em JSON
 app.use(cors());         // Para permitir requisições de diferentes origens
 
-// Conexão com o banco de dados MySQL usando variáveis de ambiente
+// Conexão com o banco de dados MySQL
 const db = mysql.createConnection({
-    host: process.env.DB_HOST,       // Host do banco de dados
-    user: process.env.DB_USER,       // Usuário do banco de dados
-    password: process.env.DB_PASS,   // Senha do banco de dados
-    database: process.env.DB_NAME    // Nome do banco de dados
+    host: 'sensordb.cpum6aqq2r5m.eu-north-1.rds.amazonaws.com',  // Endereço do seu banco de dados MySQL na AWS
+    user: 'Cassiano',       // Seu usuário do MySQL
+    password: 'cassiano3241',     // Sua senha do MySQL
+    database: 'fluviometro_db' // Nome do banco de dados
 });
 
-// Teste de conexão com o banco
 db.connect((err) => {
-    if (err) {
-        console.error('Erro ao conectar ao banco de dados:', err);
-        process.exit(1); // Encerra a aplicação se a conexão falhar
-    }
+    if (err) throw err;
     console.log('Conectado ao banco de dados MySQL');
 });
 
@@ -28,7 +25,6 @@ db.connect((err) => {
 app.get('/estacoes', (req, res) => {
     db.query('SELECT * FROM estacoes', (err, results) => {
         if (err) {
-            console.error('Erro ao buscar as estações:', err);
             res.status(500).json({ message: 'Erro ao buscar as estações' });
         } else {
             res.status(200).json(results);
@@ -41,7 +37,6 @@ app.get('/estacoes/:id', (req, res) => {
     const id = req.params.id;
     db.query('SELECT * FROM estacoes WHERE id = ?', [id], (err, results) => {
         if (err) {
-            console.error('Erro ao buscar a estação:', err);
             res.status(500).json({ message: 'Erro ao buscar a estação' });
         } else if (results.length === 0) {
             res.status(404).json({ message: 'Estação não encontrada' });
@@ -56,7 +51,6 @@ app.get('/leituras/:id', (req, res) => {
     const id = req.params.id;
     db.query('SELECT * FROM leituras WHERE estacao_id = ? ORDER BY data DESC', [id], (err, results) => {
         if (err) {
-            console.error('Erro ao buscar as leituras:', err);
             res.status(500).json({ message: 'Erro ao buscar as leituras' });
         } else {
             res.status(200).json(results);
@@ -64,8 +58,7 @@ app.get('/leituras/:id', (req, res) => {
     });
 });
 
-// Iniciar o servidor na porta configurada por variável de ambiente ou padrão 8000
-const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-    console.log(`API rodando na porta ${PORT}`);
+// Iniciar o servidor na porta 3000
+app.listen(8000, () => {
+    console.log('API rodando na porta 8000');
 });
