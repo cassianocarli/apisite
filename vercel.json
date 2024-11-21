@@ -1,15 +1,16 @@
 {
     "version": 2,
-    "builds":  [
-        {
-            "src" : "src/server.js",
-            "use" : "@vercel/node"
-        }
+    "builds": [
+      {
+        "src": "src/api/**/*.js",
+        "use": "@vercel/node"
+      }
     ],
-    "routes" : [
-        {
-            "src" : "(.*)",
-            "dest" : "src/server.js"
-        }
-    ]
-}
+    "env": {
+      "DB_HOST": "sensordb.cpum6aqq2r5m.eu-north-1.rds.amazonaws.com",
+      "DB_USER": "Cassiano",
+      "DB_PASSWORD": "cassiano3241",
+      "DB_NAME": "fluviometro_db"
+    }
+  }
+  
