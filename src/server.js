@@ -10,10 +10,10 @@ app.use(cors());         // Para permitir requisições de diferentes origens
 
 // Conexão com o banco de dados MySQL
 const db = mysql.createConnection({
-    host: 'sensordb.cpum6aqq2r5m.eu-north-1.rds.amazonaws.com',  // Endereço do seu banco de dados MySQL na AWS
-    user: 'Cassiano',       // Seu usuário do MySQL
-    password: 'cassiano3241',     // Sua senha do MySQL
-    database: 'fluviometro_db' // Nome do banco de dados
+    host: process.env.DB_HOST,     // Usando variável de ambiente
+    user: process.env.DB_USER,     // Usando variável de ambiente
+    password: process.env.DB_PASSWORD, // Usando variável de ambiente
+    database: process.env.DB_NAME  // Usando variável de ambiente
 });
 
 db.connect((err) => {
