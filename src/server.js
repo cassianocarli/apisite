@@ -63,23 +63,3 @@ app.listen(8000, () => {
     console.log('API rodando na porta 8000');
 });
 
-// Rota para adicionar uma nova leitura
-app.post('/leituras', (req, res) => {
-    const { nivel, distancia_ultrassonico, latitude, longitude, estacao_id } = req.body;
-
-    // Verificar se todos os dados necessários foram recebidos
-    if (!nivel || !distancia_ultrassonico || !latitude || !longitude || !estacao_id) {
-        return res.status(400).json({ message: 'Dados insuficientes. Certifique-se de enviar todos os campos obrigatórios.' });
-    }
-
-    // Query para inserir a nova leitura no banco de dados
-    const query = 'INSERT INTO leituras (nivel, distancia_ultrassonico, latitude, longitude, estacao_id) VALUES (?, ?, ?, ?, ?)';
-    db.query(query, [nivel, distancia_ultrassonico, latitude, longitude, estacao_id], (err, result) => {
-        if (err) {
-            console.error('Erro ao inserir dados:', err);
-            return res.status(500).json({ message: 'Erro ao salvar a leitura no banco de dados.' });
-        }
-        console.log('Leitura salva com sucesso:', result);
-        res.status(201).json({ message: 'Leitura salva com sucesso', id: result.insertId });
-    });
-});
