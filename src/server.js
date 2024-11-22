@@ -1,19 +1,20 @@
-// server.js
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 
 // Inicializa o Express
 const app = express();
 app.use(express.json()); // Para interpretar o corpo das requisições em JSON
 app.use(cors());         // Para permitir requisições de diferentes origens
+app.use(bodyParser.urlencoded({ extended: true }));  // Para permitir que o body parser entenda dados enviados no formato url-encoded
 
 // Conexão com o banco de dados MySQL
 const db = mysql.createConnection({
-    host: 'sensordb.cpum6aqq2r5m.eu-north-1.rds.amazonaws.com',  // Endereço do seu banco de dados MySQL na AWS
-    user: 'Cassiano',       // Seu usuário do MySQL
-    password: 'cassiano3241',     // Sua senha do MySQL
-    database: 'fluviometro_db' // Nome do banco de dados
+    host: 'sensordb.cpum6aqq2r5m.eu-north-1.rds.amazonaws.com',
+    user: 'Cassiano',
+    password: 'cassiano3241',
+    database: 'fluviometro_db'
 });
 
 db.connect((err) => {
@@ -32,33 +33,34 @@ app.get('/estacoes', (req, res) => {
     });
 });
 
-// Rota para obter uma estação específica pelo ID
-app.get('/estacoes/:id', (req, res) => {
-    const id = req.params.id;
-    db.query('SELECT * FROM estacoes WHERE id = ?', [id], (err, results) => {
+// Rota para inserir leituras no banco de dados com latitude e longitude fixas
+app.post('/leituras', (req, res) => {
+    const { estacao_id, nivel, distancia_ultrassonico } = req.body;
+
+    if (!estacao_id || !nivel || !distancia_ultrassonico) {
+        return res.status(400).json({ message: 'Dados incompletos' });
+    }
+
+    // Latitude e Longitude fixas
+    const latitude = -23.5505;
+    const longitude = -46.6333;
+
+    const query = `
+        INSERT INTO leituras (estacao_id, nivel, latitude, longitude, distancia_ultrassonico)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+    const values = [estacao_id, nivel, latitude, longitude, distancia_ultrassonico];
+
+    db.query(query, values, (err, result) => {
         if (err) {
-            res.status(500).json({ message: 'Erro ao buscar a estação' });
-        } else if (results.length === 0) {
-            res.status(404).json({ message: 'Estação não encontrada' });
-        } else {
-            res.status(200).json(results[0]);
+            console.error(err);
+            return res.status(500).json({ message: 'Erro ao salvar dados no banco' });
         }
+        res.status(200).json({ message: 'Leitura salva com sucesso' });
     });
 });
 
-// Rota para obter as leituras de uma estação específica
-app.get('/leituras/:id', (req, res) => {
-    const id = req.params.id;
-    db.query('SELECT * FROM leituras WHERE estacao_id = ? ORDER BY data DESC', [id], (err, results) => {
-        if (err) {
-            res.status(500).json({ message: 'Erro ao buscar as leituras' });
-        } else {
-            res.status(200).json(results);
-        }
-    });
-});
-
-// Iniciar o servidor na porta 3000
+// Iniciar o servidor na porta 8000
 app.listen(8000, () => {
     console.log('API rodando na porta 8000');
 });
