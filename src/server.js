@@ -46,6 +46,18 @@ app.get('/estacoes/:id', (req, res) => {
     });
 });
 
+app.get('/leituras', async (req, res) => {
+    try {
+        const query = 'SELECT * FROM leituras ORDER BY id DESC LIMIT 50';
+        const [rows] = await connection.execute(query);
+        res.json(rows.reverse()); // Inverte para exibir em ordem cronológica
+    } catch (error) {
+        console.error('Erro ao buscar leituras:', error);
+        res.status(500).send('Erro ao buscar leituras');
+    }
+});
+
+
 // Rota para obter as leituras de uma estação específica
 app.get('/leituras/:id', (req, res) => {
     const id = req.params.id;
