@@ -1,5 +1,6 @@
 const express = require('express');
 const mysql = require('mysql2');
+const cors = require('cors');  // Importar o CORS
 const app = express();
 const port = 3002;
 
@@ -19,6 +20,9 @@ db.connect((err) => {
   }
   console.log('Conectado ao banco de dados!');
 });
+
+// Habilitar o CORS para todas as origens
+app.use(cors());
 
 // Rota para obter a última distância
 app.get('/api/last-distance', (req, res) => {
