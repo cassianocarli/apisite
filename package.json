@@ -4,13 +4,12 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "mysql2": "^3.3.0"
+    "mysql2": "^3.11.5"
   },
   "scripts": {
     "dev": "vercel dev"
   },
   "main": "api.js",
-  "devDependencies": {},
   "author": "",
   "license": "ISC",
   "description": ""
