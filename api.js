@@ -8,7 +8,7 @@ const db = mysql.createConnection({
     host: 'sensordb.cpum6aqq2r5m.eu-north-1.rds.amazonaws.com',
     user: 'Cassiano',
     password: 'cassiano3241',
-    database: 'distances_db' // nome do banco de dados
+    database: 'distances_db'
 });
 
 // Verificar se a conexão foi bem-sucedida
@@ -22,7 +22,7 @@ db.connect((err) => {
 
 // Rota para obter a última distância
 app.get('/api/last-distance', (req, res) => {
-  const query = 'SELECT * FROM distances ORDER BY timestamp DESC LIMIT 1';
+  const query = 'SELECT * FROM distances ORDER BY created_at DESC LIMIT 1';
   
   db.query(query, (err, result) => {
     if (err) {
